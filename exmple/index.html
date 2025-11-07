@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống Quản lý Kho Bãi</title>
+    <link rel="stylesheet" href="../assets/css/index.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <h1>🏭 Quản lý Kho Bãi</h1>
+            </div>
+            <div class="user-info">
+                <span class="username" id="headerUsername">Admin</span>
+                <button class="btn-logout" onclick="handleLogout()">Đăng xuất</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <nav class="nav-menu">
+                <ul>
+                    <li class="nav-item active" data-module="dashboard">
+                        <a href="#" onclick="return false;">
+                            <span class="icon">📊</span>
+                            <span>Tổng quan</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item has-submenu" data-module="master">
+                        <a href="#" onclick="return false;">
+                            <span class="icon">📦</span>
+                            <span>Quản lý Danh mục</span>
+                            <span class="arrow">▼</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#" data-page="products">Sản phẩm/Hàng hóa</a></li>
+                            <li><a href="#" data-page="locations">Vị trí Kho</a></li>
+                            <li><a href="#" data-page="suppliers">Nhà cung cấp</a></li>
+                            <li><a href="#" data-page="customers">Khách hàng</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item has-submenu" data-module="transaction">
+                        <a href="#" onclick="return false;">
+                            <span class="icon">📥</span>
+                            <span>Quản lý Giao dịch</span>
+                            <span class="arrow">▼</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#" data-page="receipts">Nhập kho</a></li>
+                            <li><a href="#" data-page="issues">Xuất kho</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item has-submenu" data-module="inventory">
+                        <a href="#" onclick="return false;">
+                            <span class="icon">📋</span>
+                            <span>Quản lý Tồn kho</span>
+                            <span class="arrow">▼</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#" data-page="stock">Tồn kho hiện tại</a></li>
+                            <li><a href="#" data-page="history">Lịch sử Giao dịch</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item has-submenu" data-module="vehicles">
+                        <a href="#" onclick="return false;">
+                            <span class="icon">🚛</span>
+                            <span>Quản lý Xe</span>
+                            <span class="arrow">▼</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#" data-page="vehicles">Danh sách Xe</a></li>
+                            <li><a href="#" data-page="vehicle-logs">Nhật ký Ra/Vào</a></li>
+                            <li><a href="#" data-page="vehicle-reports">Báo cáo Xe</a></li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item has-submenu" data-module="reports">
+                        <a href="#" onclick="return false;">
+                            <span class="icon">📈</span>
+                            <span>Báo cáo & Cấu hình</span>
+                            <span class="arrow">▼</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="#" data-page="reports">Báo cáo Nhập/Xuất</a></li>
+                            <li><a href="#" data-page="users">Quản lý Người dùng</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="section-header">
+                    <h2>Tổng quan</h2>
+                </div>
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">📦</div>
+                        <div class="stat-info">
+                            <h3>Tổng sản phẩm</h3>
+                            <p class="stat-value" id="totalProducts">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📥</div>
+                        <div class="stat-info">
+                            <h3>Phiếu nhập hôm nay</h3>
+                            <p class="stat-value" id="todayReceipts">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📤</div>
+                        <div class="stat-info">
+                            <h3>Phiếu xuất hôm nay</h3>
+                            <p class="stat-value" id="todayIssues">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏪</div>
+                        <div class="stat-info">
+                            <h3>Tổng kho</h3>
+                            <p class="stat-value" id="totalLocations">0</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Master Data Management Sections -->
+            
+            <!-- Products Management -->
+            <section id="products" class="content-section">
+                <div class="section-header">
+                    <h2>Quản lý Sản phẩm/Hàng hóa</h2>
+                    <button class="btn btn-primary" onclick="openProductModal()">
+                        <span>+</span> Thêm sản phẩm
+                    </button>
+                </div>
+                
+                <div class="toolbar">
+                    <div class="search-box">
+                        <input type="text" id="productSearch" placeholder="Tìm kiếm sản phẩm..." />
+                        <span class="search-icon">🔍</span>
+                    </div>
+                    <div class="filter-box">
+                        <select id="productFilter">
+                            <option value="">Tất cả danh mục</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="productsTable">
+                        <thead>
+                            <tr>
+                                <th>Mã SKU</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Đơn vị tính</th>
+                                <th>Giá</th>
+                                <th>Tồn kho</th>
+                                <th>Danh mục</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Locations Management -->
+            <section id="locations" class="content-section">
+                <div class="section-header">
+                    <h2>Quản lý Vị trí Kho</h2>
+                    <button class="btn btn-primary" onclick="openLocationModal()">
+                        <span>+</span> Thêm vị trí
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="locationsTable">
+                        <thead>
+                            <tr>
+                                <th>Tên Kho</th>
+                                <th>Mã khu vực</th>
+                                <th>Sức chứa</th>
+                                <th>Đã sử dụng</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="locationsTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Suppliers Management -->
+            <section id="suppliers" class="content-section">
+                <div class="section-header">
+                    <h2>Quản lý Nhà cung cấp</h2>
+                    <button class="btn btn-primary" onclick="openSupplierModal()">
+                        <span>+</span> Thêm nhà cung cấp
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="suppliersTable">
+                        <thead>
+                            <tr>
+                                <th>Tên</th>
+                                <th>Mã số thuế</th>
+                                <th>Địa chỉ</th>
+                                <th>Liên hệ</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="suppliersTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Customers Management -->
+            <section id="customers" class="content-section">
+                <div class="section-header">
+                    <h2>Quản lý Khách hàng</h2>
+                    <button class="btn btn-primary" onclick="openCustomerModal()">
+                        <span>+</span> Thêm khách hàng
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="customersTable">
+                        <thead>
+                            <tr>
+                                <th>Tên</th>
+                                <th>Mã số thuế</th>
+                                <th>Địa chỉ</th>
+                                <th>Liên hệ</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Transaction Management Sections -->
+            
+            <!-- Goods Receipt -->
+            <section id="receipts" class="content-section">
+                <div class="section-header">
+                    <h2>Quản lý Nhập kho</h2>
+                    <button class="btn btn-primary" onclick="openReceiptModal()">
+                        <span>+</span> Tạo phiếu nhập
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="receiptsTable">
+                        <thead>
+                            <tr>
+                                <th>Mã phiếu</th>
+                                <th>Ngày nhập</th>
+                                <th>Nhà cung cấp</th>
+                                <th>Trạng thái</th>
+                                <th>Tổng tiền</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="receiptsTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Goods Issue -->
+            <section id="issues" class="content-section">
+                <div class="section-header">
+                    <h2>Quản lý Xuất kho</h2>
+                    <button class="btn btn-primary" onclick="openIssueModal()">
+                        <span>+</span> Tạo phiếu xuất
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="issuesTable">
+                        <thead>
+                            <tr>
+                                <th>Mã phiếu</th>
+                                <th>Ngày xuất</th>
+                                <th>Khách hàng</th>
+                                <th>Trạng thái</th>
+                                <th>Tổng tiền</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="issuesTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Inventory Management Sections -->
+            
+            <!-- Current Stock -->
+            <section id="stock" class="content-section">
+                <div class="section-header">
+                    <h2>Tồn kho hiện tại</h2>
+                </div>
+
+                <div class="toolbar">
+                    <div class="filter-group">
+                        <select id="stockLocationFilter">
+                            <option value="">Tất cả kho</option>
+                        </select>
+                        <select id="stockProductFilter">
+                            <option value="">Tất cả sản phẩm</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="applyStockFilter()">Áp dụng</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="stockTable">
+                        <thead>
+                            <tr>
+                                <th>Mã SKU</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Vị trí kho</th>
+                                <th>Số lượng tồn</th>
+                                <th>Đơn vị tính</th>
+                                <th>Giá trị tồn kho</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stockTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Transaction History -->
+            <section id="history" class="content-section">
+                <div class="section-header">
+                    <h2>Lịch sử Giao dịch</h2>
+                </div>
+
+                <div class="toolbar">
+                    <div class="filter-group">
+                        <input type="date" id="historyDateFrom" />
+                        <input type="date" id="historyDateTo" />
+                        <select id="historyTypeFilter">
+                            <option value="">Tất cả loại</option>
+                            <option value="receipt">Nhập kho</option>
+                            <option value="issue">Xuất kho</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="applyHistoryFilter()">Áp dụng</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="historyTable">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Loại giao dịch</th>
+                                <th>Mã phiếu</th>
+                                <th>Sản phẩm</th>
+                                <th>Số lượng</th>
+                                <th>Người thực hiện</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Reports & Configuration Sections -->
+            
+            <!-- Reports -->
+            <section id="reports" class="content-section">
+                <div class="section-header">
+                    <h2>Báo cáo Nhập/Xuất</h2>
+                </div>
+
+                <div class="report-controls">
+                    <div class="date-picker-group">
+                        <label>Từ ngày:</label>
+                        <input type="date" id="reportDateFrom" />
+                        <label>Đến ngày:</label>
+                        <input type="date" id="reportDateTo" />
+                        <button class="btn btn-primary" onclick="generateReport()">Tạo báo cáo</button>
+                        <button class="btn btn-success" onclick="exportExcel()">📥 Xuất Excel</button>
+                        <button class="btn btn-danger" onclick="exportPDF()">📄 Xuất PDF</button>
+                    </div>
+                </div>
+
+                <div class="report-charts">
+                    <div class="chart-container">
+                        <h3>Biểu đồ Nhập/Xuất</h3>
+                        <canvas id="reportChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <h3>Phân bổ theo sản phẩm</h3>
+                        <canvas id="productChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="reportTable">
+                        <thead>
+                            <tr>
+                                <th>Ngày</th>
+                                <th>Loại</th>
+                                <th>Số lượng nhập</th>
+                                <th>Số lượng xuất</th>
+                                <th>Giá trị nhập</th>
+                                <th>Giá trị xuất</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reportTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Vehicle Management Sections -->
+            
+            <!-- Vehicles List -->
+            <section id="vehicles" class="content-section">
+                <div class="section-header">
+                    <h2>Quản lý Xe</h2>
+                    <button class="btn btn-primary" onclick="openVehicleModal()">
+                        <span>+</span> Thêm xe
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="vehiclesTable">
+                        <thead>
+                            <tr>
+                                <th>Biển số</th>
+                                <th>Loại xe</th>
+                                <th>Tài xế</th>
+                                <th>Đơn vị chủ quản</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vehiclesTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Vehicle Logs -->
+            <section id="vehicle-logs" class="content-section">
+                <div class="section-header">
+                    <h2>Nhật ký Ra/Vào Xe</h2>
+                    <button class="btn btn-primary" onclick="openVehicleLogModal()">
+                        <span>+</span> Ghi nhận vào/ra
+                    </button>
+                </div>
+
+                <div class="toolbar">
+                    <div class="filter-group">
+                        <select id="vehicleLogFilter">
+                            <option value="">Tất cả</option>
+                            <option value="in">Chỉ vào</option>
+                            <option value="out">Chỉ ra</option>
+                            <option value="parked">Đang trong kho</option>
+                        </select>
+                        <input type="date" id="vehicleLogDate" />
+                        <button class="btn btn-secondary" onclick="filterVehicleLogs()">Lọc</button>
+                    </div>
+                </div>
+
+                <div class="alert-container" id="vehicleAlerts"></div>
+
+                <div class="table-container">
+                    <table class="data-table" id="vehicleLogsTable">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Biển số</th>
+                                <th>Tài xế</th>
+                                <th>Loại</th>
+                                <th>Mục đích</th>
+                                <th>Người xác nhận</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vehicleLogsTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Vehicle Reports -->
+            <section id="vehicle-reports" class="content-section">
+                <div class="section-header">
+                    <h2>Báo cáo Xe vào/ra</h2>
+                </div>
+
+                <div class="report-controls">
+                    <div class="date-picker-group">
+                        <label>Thời gian:</label>
+                        <select id="vehicleReportPeriod">
+                            <option value="day">Hôm nay</option>
+                            <option value="week">Tuần này</option>
+                            <option value="month">Tháng này</option>
+                            <option value="custom">Tùy chọn</option>
+                        </select>
+                        <div id="vehicleCustomDateRange" style="display: none;">
+                            <input type="date" id="vehicleReportDateFrom" />
+                            <label>đến</label>
+                            <input type="date" id="vehicleReportDateTo" />
+                        </div>
+                        <button class="btn btn-primary" onclick="generateVehicleReport()">Tạo báo cáo</button>
+                    </div>
+                </div>
+
+                <div class="report-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon">🚛</div>
+                        <div class="stat-info">
+                            <h3>Tổng lượt vào</h3>
+                            <p class="stat-value" id="totalVehiclesIn">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🚪</div>
+                        <div class="stat-info">
+                            <h3>Tổng lượt ra</h3>
+                            <p class="stat-value" id="totalVehiclesOut">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⏰</div>
+                        <div class="stat-info">
+                            <h3>Xe đang trong kho</h3>
+                            <p class="stat-value" id="vehiclesParked">0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="vehicleReportTable">
+                        <thead>
+                            <tr>
+                                <th>Ngày</th>
+                                <th>Số lượt vào</th>
+                                <th>Số lượt ra</th>
+                                <th>Xe đang trong kho</th>
+                                <th>Chi tiết</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vehicleReportTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- User Management -->
+            <section id="users" class="content-section">
+                <div class="section-header">
+                    <h2>Quản lý Người dùng</h2>
+                    <button class="btn btn-primary" onclick="openUserModal()">
+                        <span>+</span> Thêm người dùng
+                    </button>
+                </div>
+
+                <div class="table-container">
+                    <table class="data-table" id="usersTable">
+                        <thead>
+                            <tr>
+                                <th>Tên đăng nhập</th>
+                                <th>Họ tên</th>
+                                <th>Email</th>
+                                <th>Vai trò</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Data will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal Templates -->
+    
+    <!-- Product Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="productModalTitle">Thêm sản phẩm</h3>
+                <span class="close" onclick="closeModal('productModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="productForm">
+                    <div class="form-group">
+                        <label>Mã SKU *</label>
+                        <input type="text" id="productSku" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Tên sản phẩm *</label>
+                        <input type="text" id="productName" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Mô tả</label>
+                        <textarea id="productDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Đơn vị tính *</label>
+                            <input type="text" id="productUnit" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Giá *</label>
+                            <input type="number" id="productPrice" step="0.01" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Danh mục</label>
+                        <select id="productCategory">
+                            <option value="">Chọn danh mục</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('productModal')">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Location Modal -->
+    <div id="locationModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="locationModalTitle">Thêm vị trí kho</h3>
+                <span class="close" onclick="closeModal('locationModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="locationForm">
+                    <div class="form-group">
+                        <label>Tên Kho *</label>
+                        <input type="text" id="locationName" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Mã khu vực *</label>
+                        <input type="text" id="locationCode" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Sức chứa</label>
+                        <input type="number" id="locationCapacity" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('locationModal')">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supplier/Customer Modal -->
+    <div id="supplierModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="supplierModalTitle">Thêm nhà cung cấp</h3>
+                <span class="close" onclick="closeModal('supplierModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="supplierForm">
+                    <div class="form-group">
+                        <label>Tên *</label>
+                        <input type="text" id="supplierName" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Mã số thuế</label>
+                        <input type="text" id="supplierTaxCode" />
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ</label>
+                        <textarea id="supplierAddress" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Điện thoại</label>
+                        <input type="tel" id="supplierPhone" />
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="supplierEmail" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('supplierModal')">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="customerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="customerModalTitle">Thêm khách hàng</h3>
+                <span class="close" onclick="closeModal('customerModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="customerForm">
+                    <div class="form-group">
+                        <label>Tên *</label>
+                        <input type="text" id="customerName" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Mã số thuế</label>
+                        <input type="text" id="customerTaxCode" />
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ</label>
+                        <textarea id="customerAddress" rows="2"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Điện thoại</label>
+                        <input type="tel" id="customerPhone" />
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="customerEmail" />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('customerModal')">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Receipt/Issue Modal -->
+    <div id="receiptModal" class="modal modal-large">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tạo phiếu nhập kho</h3>
+                <span class="close" onclick="closeModal('receiptModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="receiptForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Nhà cung cấp *</label>
+                            <select id="receiptSupplier" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ngày nhập *</label>
+                            <input type="date" id="receiptDate" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ghi chú</label>
+                        <textarea id="receiptNote" rows="2"></textarea>
+                    </div>
+                    <h4>Chi tiết sản phẩm</h4>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Vị trí kho</th>
+                                    <th>Đơn giá</th>
+                                    <th>Thành tiền</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="receiptItemsBody">
+                                <!-- Items will be added here -->
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn btn-secondary" onclick="addReceiptItem()">+ Thêm dòng</button>
+                    </div>
+                    <div class="total-summary">
+                        <strong>Tổng tiền: <span id="receiptTotal">0</span> VNĐ</strong>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="saveReceiptDraft()">Lưu nháp</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('receiptModal')">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Hoàn tất nhập kho</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="issueModal" class="modal modal-large">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Tạo phiếu xuất kho</h3>
+                <span class="close" onclick="closeModal('issueModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="issueForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Khách hàng *</label>
+                            <select id="issueCustomer" required></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ngày xuất *</label>
+                            <input type="date" id="issueDate" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ghi chú</label>
+                        <textarea id="issueNote" rows="2"></textarea>
+                    </div>
+                    <h4>Chi tiết sản phẩm</h4>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Sản phẩm</th>
+                                    <th>Số lượng</th>
+                                    <th>Vị trí kho</th>
+                                    <th>Đơn giá</th>
+                                    <th>Thành tiền</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="issueItemsBody">
+                                <!-- Items will be added here -->
+                            </tbody>
+                        </table>
+                        <button type="button" class="btn btn-secondary" onclick="addIssueItem()">+ Thêm dòng</button>
+                    </div>
+                    <div class="total-summary">
+                        <strong>Tổng tiền: <span id="issueTotal">0</span> VNĐ</strong>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="saveIssueDraft()">Lưu nháp</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('issueModal')">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Hoàn tất xuất kho</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="userModalTitle">Thêm người dùng</h3>
+                <span class="close" onclick="closeModal('userModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="userForm">
+                    <div class="form-group">
+                        <label>Tên đăng nhập *</label>
+                        <input type="text" id="userUsername" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Họ tên *</label>
+                        <input type="text" id="userFullName" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="userEmail" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Mật khẩu *</label>
+                        <input type="password" id="userPassword" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Vai trò *</label>
+                        <select id="userRole" required>
+                            <option value="">Chọn vai trò</option>
+                            <option value="admin">Admin</option>
+                            <option value="warehouse">Thủ kho</option>
+                            <option value="viewer">Xem báo cáo</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('userModal')">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vehicle Modal -->
+    <div id="vehicleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="vehicleModalTitle">Thêm xe</h3>
+                <span class="close" onclick="closeModal('vehicleModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="vehicleForm">
+                    <div class="form-group">
+                        <label>Biển số *</label>
+                        <input type="text" id="vehiclePlate" required placeholder="VD: 29A-12345" />
+                    </div>
+                    <div class="form-group">
+                        <label>Loại xe *</label>
+                        <select id="vehicleType" required>
+                            <option value="">Chọn loại xe</option>
+                            <option value="truck">Xe tải</option>
+                            <option value="container">Container</option>
+                            <option value="van">Xe bán tải</option>
+                            <option value="car">Ô tô</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tài xế *</label>
+                        <input type="text" id="vehicleDriver" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại tài xế</label>
+                        <input type="tel" id="vehicleDriverPhone" />
+                    </div>
+                    <div class="form-group">
+                        <label>Đơn vị chủ quản *</label>
+                        <input type="text" id="vehicleOwner" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Ghi chú</label>
+                        <textarea id="vehicleNote" rows="3"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('vehicleModal')">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Lưu</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Vehicle Log Modal -->
+    <div id="vehicleLogModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="vehicleLogModalTitle">Ghi nhận vào/ra xe</h3>
+                <span class="close" onclick="closeModal('vehicleLogModal')">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="vehicleLogForm">
+                    <div class="form-group">
+                        <label>Biển số xe *</label>
+                        <select id="logVehicleId" required>
+                            <option value="">Chọn xe</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Loại giao dịch *</label>
+                        <select id="logType" required onchange="toggleLogType()">
+                            <option value="">Chọn loại</option>
+                            <option value="in">Xe vào</option>
+                            <option value="out">Xe ra</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Thời gian *</label>
+                            <input type="datetime-local" id="logDateTime" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Mục đích *</label>
+                        <select id="logPurpose" required>
+                            <option value="">Chọn mục đích</option>
+                            <option value="delivery">Giao hàng</option>
+                            <option value="pickup">Lấy hàng</option>
+                            <option value="maintenance">Bảo trì/sửa chữa</option>
+                            <option value="inspection">Kiểm tra</option>
+                            <option value="other">Khác</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Người xác nhận (Bảo vệ) *</label>
+                        <input type="text" id="logGuard" required placeholder="Tên bảo vệ" />
+                    </div>
+                    <div class="form-group">
+                        <label>Ghi chú</label>
+                        <textarea id="logNote" rows="2"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal('vehicleLogModal')">Hủy</button>
+                        <button type="submit" class="btn btn-primary">Ghi nhận</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/index.js"></script>
+</body>
+</html>
